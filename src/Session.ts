@@ -183,7 +183,10 @@ const makeSession = Effect.gen(function*() {
         : Effect.succeed(entry.records.map(formatRecord).join("\n") + "\n")
     }),
 
-    reset: Effect.andThen(Ref.set(state, emptySession), Ref.set(history, []))
+    reset: Effect.andThen(Ref.set(state, emptySession), Ref.set(history, [])),
+
+    /** Forget the undo history, so what's been entered so far can't be undone. */
+    clearHistory: Ref.set(history, [])
   }
 })
 

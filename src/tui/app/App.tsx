@@ -28,7 +28,7 @@ export const App = ({ store, autosaveDir, onQuit }: AppProps) => {
     renderer.setBackgroundColor("#0f141a")
   }, [renderer])
 
-  return screen === "setup"
+  return screen === "setup" || currentGame(state) === undefined
     ? <SetupScreen store={store} autosaveDir={autosaveDir} onStarted={() => setScreen("scoring")} />
     : <ScoringScreen store={store} state={state} />
 }

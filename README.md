@@ -63,6 +63,40 @@ T1 0o> state
 | `games`, `game <n>` | switch between games in a multi-game file |
 | `help`, `help notation` | command help, event-notation cheat sheet |
 
+## Terminal scorebook (`retro-tui`)
+
+An all-in-one terminal UI built with [OpenTUI](https://github.com/anomalyco/opentui).
+Requires Node 26.4+ (see `.node-version`).
+
+```sh
+npm run tui                                   # set up a new game, then score it
+npm run tui -- examples/NYA202303300.EVA      # resume a game from an event file
+npm run tui -- --save game.EVN                # choose where to autosave
+```
+
+1. **Setup**: enter the date, DH and innings, team codes, and both batting
+   orders with positions (`SS`, `6`, `DH`...). Tab or the arrow keys move
+   between fields. `Ctrl+E` fills in example lineups, `Ctrl+O` opens an event
+   file, and `Ctrl+G` (or F5) starts the game.
+2. **Scoring**: type events in Retrosheet notation (`S8/G.1-2`, `K`,
+   `64(1)3/GDP`, `SB2`), with a live description as you type. `Esc` switches
+   to the pitch pad, where you key pitches one at a time (`B C S F X`...) and
+   the count updates. Ball four, strike three and a hit batter fill in the
+   event for you. Pitches carry across runner events (`BC.FX`).
+   Substitutions: `ph <name>`, `pr <base> <name>`, `pitcher <name>`,
+   `sub <away|home> <slot> <pos> <name>`, `move <away|home> <slot> <pos>`,
+   or `Ctrl+N` for a form. All the REPL commands work too.
+3. **Views**: `Tab` switches between the **game view** (the field with
+   fielders, runners, batter and pitcher, both lineups at the sides, the line
+   score, count and outs) and the **scorebook**: a grid of batting slots by
+   inning, with the play notation, a small diamond of each batter's path
+   around the bases, out numbers, RBI, LOB, and inning totals. `Ctrl+T`
+   chooses the team, and PgUp/PgDn scroll.
+
+The game is saved as a Retrosheet event file after every play (by default
+`<gameid>.EVN` in the current directory). `Ctrl+Z` undoes, `F1` shows help,
+and `Ctrl+C` quits.
+
 ## How it works
 
 | Module | Role |
@@ -72,6 +106,7 @@ T1 0o> state
 | `src/retrosheet/Engine.ts` | applies records to an immutable `GameState`: runner movement, outs, runs, half innings, game end, substitutions, stats |
 | `src/Session.ts` | `Session` service: multiple games, undo history, loading and exporting |
 | `src/repl/*` | command handling, rendering, and a readline-based `LineReader` service |
+| `src/tui/*` | the terminal UI: `Setup` (lineups → records), `Scorer` (Effect service: pitch buffer, log, autosave, substitution shortcuts), `Scorebook` (grid model), `app/*` (OpenTUI + React screens) |
 
 Runner movement follows Retrosheet's conventions. Explicit advances override
 implied ones. Unmentioned runners stay put unless they're forced or a home run

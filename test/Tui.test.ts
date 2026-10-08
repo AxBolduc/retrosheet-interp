@@ -203,5 +203,11 @@ describe("Scorer", () => {
       const s = yield* scorer.get
       assert.strictEqual(s.pitches, "")
       assert.strictEqual(currentGame(s)!.plays.length, 1)
+      // The lineups themselves can't be undone.
+      yield* scorer.undo
+      yield* scorer.undo
+      const after = yield* scorer.get
+      assert.strictEqual(currentGame(after)!.plays.length, 0)
+      assert.strictEqual(currentGame(after)!.teams[0].lineup.filter((p) => p !== undefined).length, 10)
     }).pipe(Effect.provide(TestLayer)))
 })

@@ -286,12 +286,13 @@ const makeScorer = Effect.gen(function*() {
         const records = yield* setupRecords(setup)
         yield* session.reset
         yield* session.loadText(records.map(formatRecord).join("\n"), "lineups")
+        yield* session.clearHistory
         yield* log({ kind: "output", text: `Game ${records[0]!._tag === "Id" ? records[0]!.gameId : ""} set up. Play ball!` })
         yield* sync({ resetPitches: true })
       }),
 
-    /** Load an event file (e.g. to resume a game). */
-    load: (file: string) => runLine(`load ${file}`),
+    /** Load an event file to resume a game; the load itself can't be undone. */
+    load: (file: string) => Effect.tap(runLine(`load ${file}`), (o) => (o.ok ? session.clearHistory : Effect.void)),
 
     setSavePath: (savePath: string | undefined) =>
       Effect.andThen(update((s) => ({ ...s, savePath })), sync({ resetPitches: false })),
