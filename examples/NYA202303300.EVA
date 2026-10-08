@@ -1,0 +1,160 @@
+id,NYA202303300
+version,2
+info,visteam,SFN
+info,hometeam,NYA
+info,site,NYC21
+info,date,2023/03/30
+info,number,0
+info,gametype,regular
+info,starttime,1:05PM
+info,daynight,day
+info,innings,9
+info,tiebreaker,2
+info,usedh,true
+info,umphome,diazl901
+info,ump1b,fleta901
+info,ump2b,bacce901
+info,ump3b,estam901
+info,umplf,(none)
+info,umprf,(none)
+info,inputtime,2023/08/16 09:03:31
+info,howscored,unknown
+info,pitches,pitches
+info,oscorer,sprej701
+info,temp,39
+info,winddir,ltor
+info,windspeed,13
+info,fieldcond,unknown
+info,precip,none
+info,sky,sunny
+info,timeofgame,153
+info,attendance,46172
+info,wp,coleg001
+info,lp,webbl001
+info,save,
+start,wadel001,"LaMonte Wade Jr.",0,1,3
+start,confm001,"Michael Conforto",0,2,9
+start,florw001,"Wilmer Flores",0,3,5
+start,pedej001,"Joc Pederson",0,4,10
+start,yastm001,"Mike Yastrzemski",0,5,8
+start,estrt001,"Thairo Estrada",0,6,4
+start,crawb001,"Brandon Crawford",0,7,6
+start,sabob001,"Blake Sabol",0,8,7
+start,perer003,"Roberto Perez",0,9,2
+start,webbl001,"Logan Webb",0,0,1
+start,lemad001,"DJ LeMahieu",1,1,4
+start,judga001,"Aaron Judge",1,2,8
+start,rizza001,"Anthony Rizzo",1,3,3
+start,stanm004,"Giancarlo Stanton",1,4,9
+start,donaj001,"Josh Donaldson",1,5,5
+start,torrg001,"Gleyber Torres",1,6,10
+start,cabro002,"Oswaldo Cabrera",1,7,7
+start,trevj001,"Jose Trevino",1,8,2
+start,volpa001,"Anthony Volpe",1,9,6
+start,coleg001,"Gerrit Cole",1,0,1
+play,1,0,wadel001,30,BBBB,W
+play,1,0,confm001,12,FBFFC,K
+play,1,0,florw001,22,CBBFC,K
+play,1,0,pedej001,32,CB+1BSF1B.>S,K
+play,1,1,lemad001,12,CBFS,K
+play,1,1,judga001,01,CX,HR/F8XD
+play,1,1,rizza001,22,CCBB.X,S7/L7+
+play,1,1,stanm004,12,CBSFFC,K
+play,1,1,donaj001,02,CFC,K
+play,2,0,yastm001,22,FBFBS,K
+play,2,0,estrt001,01,CX,S8/L8
+play,2,0,crawb001,22,S1SB>FBS,K
+play,2,0,sabob001,11,SB>S,SB2
+play,2,0,sabob001,22,SB>S.*BS,K
+play,2,1,torrg001,00,X,63/G6
+play,2,1,cabro002,32,CBCBBS,K
+play,2,1,trevj001,12,BCCC,K
+play,3,0,perer003,22,FBF.BC,K
+play,3,0,wadel001,22,FLBBX,43/G4D
+play,3,0,confm001,22,CBB.FC,K
+play,3,1,volpa001,32,FBBCBB,W
+play,3,1,lemad001,02,SF1F>C,K+SB2
+play,3,1,judga001,12,CSBS,K
+play,3,1,rizza001,32,BFBFBX,5/P56S
+play,4,0,florw001,31,FBBBB,W
+play,4,0,pedej001,22,SFBBS,K
+play,4,0,yastm001,32,BBSSBS,K
+play,4,0,estrt001,00,X,63/G6
+play,4,1,stanm004,01,CX,63/G6
+play,4,1,donaj001,11,BCX,S7/G56
+play,4,1,torrg001,00,X,HR/F9D.1-H
+play,4,1,cabro002,12,BFFS,K
+play,4,1,trevj001,12,CBFS,K
+play,5,0,crawb001,12,CBS.X,7/F78D
+play,5,0,sabob001,10,BX,31/G34
+play,5,0,perer003,11,CBX,S8/L89D+
+play,5,0,wadel001,22,CBF*BX,3/G3S
+play,5,1,volpa001,01,FX,53/G56
+play,5,1,lemad001,02,FCS,K
+play,5,1,judga001,22,BSS.BS,K
+play,6,0,confm001,00,X,S7/L78
+play,6,0,florw001,32,*BCBBFX,64(1)3/GDP/G6
+play,6,0,pedej001,02,SFS,K
+play,6,1,rizza001,11,FBX,43/G34
+play,6,1,stanm004,02,SCX,3/P3F/FL
+play,6,1,donaj001,12,BCSC,K
+play,7,0,yastm001,00,,NP
+sub,peraw002,"Wandy Peralta",1,0,1
+play,7,0,yastm001,00,.,NP
+sub,davij006,"J.D. Davis",0,5,11
+play,7,0,davij006,32,..BSBBSC,K
+play,7,0,estrt001,11,CBX,S9/L89D+
+play,7,0,crawb001,12,BCSN,BK.1-2
+play,7,0,crawb001,22,BCSN.BC,K
+play,7,0,sabob001,00,,NP
+sub,villd001,"David Villar",0,8,11
+play,7,0,villd001,00,.,NP
+sub,loaij001,"Jonathan Loaisiga",1,0,1
+play,7,0,villd001,01,..CX,8/F8
+play,7,1,torrg001,00,,NP
+sub,wadel001,"LaMonte Wade Jr.",0,1,7
+play,7,1,torrg001,00,.,NP
+sub,davij006,"J.D. Davis",0,5,3
+play,7,1,torrg001,00,..,NP
+sub,wiseb001,"Brett Wisely",0,8,8
+play,7,1,torrg001,32,...FBBSB.FB,W
+play,7,1,cabro002,00,,NP
+sub,brebj001,"John Brebbia",0,0,1
+play,7,1,cabro002,22,.FB1SFB>S,K+SB2
+play,7,1,trevj001,00,X,S7/L7+.2-3
+play,7,1,volpa001,22,CBBSS,K
+play,7,1,lemad001,00,X,S7/G56.3-H;1-2
+play,7,1,judga001,22,BCBSX,S8/F8S.2-H;1-3
+play,7,1,rizza001,12,BCSFS,K
+play,8,0,perer003,00,,NP
+sub,marir001,"Ron Marinaccio",1,0,1
+play,8,0,perer003,00,.,NP
+sub,beatm001,"Matt Beaty",0,9,11
+play,8,0,beatm001,02,..FFFFFS,K
+play,8,0,wadel001,10,BX,2/P2F/FL
+play,8,0,confm001,22,FF.BFBFX,31/G34
+play,8,1,stanm004,00,,NP
+sub,bartj003,"Joey Bart",0,9,2
+play,8,1,stanm004,00,.,NP
+sub,roget002,"Tyler Rogers",0,0,1
+play,8,1,stanm004,01,..CX,S8/G6M
+play,8,1,donaj001,00,,NP
+sub,flore001,"Estevan Florial",1,4,12
+play,8,1,donaj001,10,.BX,13/G1S-.1-2
+play,8,1,torrg001,21,BCBX,8/F8XD.2-3
+play,8,1,cabro002,02,FFC,K
+play,9,0,florw001,00,,NP
+sub,judga001,"Aaron Judge",1,2,9
+play,9,0,florw001,00,.,NP
+sub,flore001,"Estevan Florial",1,4,8
+play,9,0,florw001,32,..BBCFF.BX,63/G6
+play,9,0,pedej001,32,S.BBSFBFFB,W
+play,9,0,davij006,12,A>F*BFC,K
+play,9,0,estrt001,12,BFC>C,K
+data,er,brebj001,1
+data,er,webbl001,4
+data,er,roget002,0
+data,er,peraw002,0
+data,er,loaij001,0
+data,er,marir001,0
+data,er,coleg001,0

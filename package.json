@@ -1,0 +1,39 @@
+{
+  "name": "retrosheet-interp",
+  "version": "1.0.0",
+  "description": "Retrosheet event-file interpreter and interactive scoring REPL",
+  "main": "dist/src/main.js",
+  "scripts": {
+    "start": "tsx src/main.ts",
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "validate": "tsx scripts/validate-season.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AxBolduc/retrosheet-interp.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/AxBolduc/retrosheet-interp/issues"
+  },
+  "homepage": "https://github.com/AxBolduc/retrosheet-interp#readme",
+  "dependencies": {
+    "@effect/platform-node": "^4.0.2",
+    "effect": "^4.0.2"
+  },
+  "devDependencies": {
+    "@effect/vitest": "^4.0.2",
+    "@types/node": "^26.6.4",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.3"
+  },
+  "bin": {
+    "retro": "dist/src/main.js"
+  }
+}
