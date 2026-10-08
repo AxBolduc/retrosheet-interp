@@ -24,16 +24,23 @@
   "homepage": "https://github.com/AxBolduc/retrosheet-interp#readme",
   "dependencies": {
     "@effect/platform-node": "^4.0.2",
-    "effect": "^4.0.2"
+    "@opentui/core": "^0.5.17",
+    "@opentui/react": "^0.5.17",
+    "effect": "^4.0.2",
+    "react": "^19.3.0"
   },
   "devDependencies": {
     "@effect/vitest": "^4.0.2",
     "@types/node": "^26.6.4",
+    "@types/react": "^19.3.0",
     "tsx": "^4.23.15",
     "typescript": "^7.0.2",
     "vitest": "^5.0.3"
   },
   "bin": {
     "retro": "dist/src/main.js"
+  },
+  "engines": {
+    "node": ">=26.4.0"
   }
 }
