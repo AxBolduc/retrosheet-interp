@@ -8,7 +8,7 @@
 import { Console, Effect, FileSystem, Option, Result } from "effect"
 import { Session, type SubmitResult } from "../Session.ts"
 import { describeEvent } from "../retrosheet/Describe.ts"
-import { parseEvent } from "../retrosheet/Event.ts"
+import { endsPlateAppearance, parseEvent } from "../retrosheet/Event.ts"
 import { type GameState, halfName, halfPhrase, ordinal, playerName, positionAbbrev, teamCode } from "../retrosheet/Game.ts"
 import { type Count, looksLikeRecord, recordKeywords, type Side } from "../retrosheet/Record.ts"
 import { LineReader } from "./LineReader.ts"
@@ -143,13 +143,17 @@ const balls = new Set(["B", "I", "P", "V", "H"])
 const strikes = new Set(["C", "S", "K", "M", "O", "Q", "T"])
 const fouls = new Set(["F", "L", "R"])
 
-/** The count before the final pitch of a pitch sequence (the count Retrosheet records). */
-export const countFromPitches = (pitches: string): Count | undefined => {
+/**
+ * The count Retrosheet records for a pitch sequence: the count before the
+ * final pitch for a play that ends the plate appearance, or after all of them
+ * for a runner event in the middle of one (`includeLast`).
+ */
+export const countFromPitches = (pitches: string, options: { readonly includeLast?: boolean } = {}): Count | undefined => {
   const p = pitches.replace(/[^A-Z]/gi, "").toUpperCase()
   if (p === "" || p.includes("U")) return undefined
   let b = 0
   let s = 0
-  for (const ch of p.slice(0, -1)) {
+  for (const ch of options.includeLast ? p : p.slice(0, -1)) {
     if (balls.has(ch)) b = Math.min(3, b + 1)
     else if (strikes.has(ch)) s = Math.min(2, s + 1)
     else if (fouls.has(ch) && s < 2) s++
@@ -327,7 +331,12 @@ export const makeHandler = (st: Style) => {
       case "Command":
         return yield* runCommand(input.name, input.args)
       case "Event": {
-        const result = yield* Effect.result(session.submitEvent(input.event, input.pitches, countFromPitches(input.pitches)))
+        const midPA = Result.match(yield* Effect.result(parseEvent(input.event)), {
+          onFailure: () => false,
+          onSuccess: (e) => !endsPlateAppearance(e.basic)
+        })
+        const count = countFromPitches(input.pitches, { includeLast: midPA })
+        const result = yield* Effect.result(session.submitEvent(input.event, input.pitches, count))
         return say(Result.isFailure(result) ? errorText(result.failure) : narrate(result.success, st))
       }
       case "Unknown":

@@ -46,6 +46,42 @@ export interface Substitution {
 
 const MAX_LOG = 500
 
+/** A player on the team by full name, or by last name if only one matches. */
+export const findPlayer = (game: GameState, side: Side, name: string): string | undefined => {
+  const team = game.teams[side]
+  const wanted = name.trim().toLowerCase()
+  const exact = team.appeared.find((id) => playerName(game, id).toLowerCase() === wanted || id === wanted)
+  if (exact !== undefined) return exact
+  const byLast = team.appeared.filter((id) => playerName(game, id).toLowerCase().split(/\s+/).slice(1).join(" ") === wanted)
+  return byLast.length === 1 ? byLast[0] : undefined
+}
+
+/**
+ * Problems with the fielding team's defense: pinch hitters and runners still
+ * without a position, or empty positions. Retrosheet expects a `sub` record
+ * for each change before the next pitch.
+ */
+export const defenseIssues = (game: GameState): ReadonlyArray<string> => {
+  if (game.phase !== "in-progress") return []
+  const side = otherSide(game.battingSide)
+  const team = game.teams[side]
+  const issues: Array<string> = []
+  const label = side === 0 ? "away" : "home"
+  for (let slot = 1; slot <= 9; slot++) {
+    const id = team.lineup[slot]
+    const pos = id === undefined ? undefined : team.positions[id]
+    if (id !== undefined && (pos === 11 || pos === 12)) {
+      issues.push(`${playerName(game, id)} (${pos === 11 ? "PH" : "PR"}) needs a position: move ${label} ${slot} <pos>, or sub ${label} ${slot} <pos> <name>`)
+    }
+  }
+  const names = ["", "P", "C", "1B", "2B", "3B", "SS", "LF", "CF", "RF"]
+  const empty = names.flatMap((n, p) => (p > 0 && team.fielders[p] === undefined ? [n] : []))
+  if (empty.length > 0 && issues.length === 0) issues.push(`${teamCodeOrSide(game, side)} has nobody at ${empty.join(", ")}`)
+  return issues
+}
+
+const teamCodeOrSide = (game: GameState, side: Side) => game.teams[side].code ?? (side === 0 ? "Away" : "Home")
+
 export const currentGame = (s: ScorerState): GameState | undefined => s.session.games[s.session.current]?.state
 
 /** Pitches to carry on with after the game changed: those already recorded in this plate appearance. */
@@ -151,10 +187,9 @@ const makeScorer = Effect.gen(function*() {
     Effect.gen(function*() {
       const g = yield* game
       if (g === undefined) return yield* fail(echo ?? "sub", "no game in progress")
-      const team = g.teams[sub.side]
       const name = sub.name.trim()
       if (name === "") return yield* fail(echo ?? "sub", "the new player needs a name")
-      const existing = team.appeared.find((id) => playerName(g, id).toLowerCase() === name.toLowerCase())
+      const existing = findPlayer(g, sub.side, name)
       const playerId = existing ?? makePlayerId(name, new Set(Object.keys(g.players)))
       const record = RetroRecord.Sub({
         playerId,
@@ -274,10 +309,12 @@ const makeScorer = Effect.gen(function*() {
         return savePath
       }),
 
+    /** Add a pitch to the current plate appearance; returns the whole sequence so far. */
     addPitch: (code: string) =>
-      isPitchCode(code)
-        ? update((s) => ({ ...s, pitches: s.pitches + code.toUpperCase() }))
-        : Effect.void,
+      Effect.map(
+        SubscriptionRef.updateAndGet(ref, (s) => (isPitchCode(code) ? { ...s, pitches: s.pitches + code.toUpperCase() } : s)),
+        (s) => s.pitches
+      ),
 
     removePitch: update((s) => ({ ...s, pitches: s.pitches.endsWith(".") ? s.pitches : s.pitches.slice(0, -1) })),
 

@@ -379,7 +379,7 @@ export const SetupScreen = (
         gap={1}
       >
         {label("Date", 5)}
-        <Field id={{ _tag: "date" }} width={12} invalid={invalid({ _tag: "date" })} {...props} />
+        <Field id={{ _tag: "date" }} width={14} invalid={invalid({ _tag: "date" })} {...props} />
         {label(" Game #", 8)}
         <Field id={{ _tag: "number" }} width={3} {...props} />
         {label(" Innings", 9)}

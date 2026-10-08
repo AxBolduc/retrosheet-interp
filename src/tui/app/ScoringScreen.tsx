@@ -14,7 +14,7 @@ import { parseEvent } from "../../retrosheet/Event.ts"
 import { currentBatterId, type GameState, otherSide, playerName, positionAbbrev, teamCode } from "../../retrosheet/Game.ts"
 import type { Side } from "../../retrosheet/Record.ts"
 import { countAfter, impliedEvent, inPlay, isPitchCode, pitchCodes } from "../Pitches.ts"
-import { currentGame, Scorer, type ScorerState } from "../Scorer.ts"
+import { currentGame, defenseIssues, Scorer, type ScorerState } from "../Scorer.ts"
 import { parsePosition } from "../Setup.ts"
 import { GameView } from "./GameView.tsx"
 import { Scoreboard } from "./Scoreboard.tsx"
@@ -187,7 +187,7 @@ const SubDialog = (
     focusedTextColor: theme.text
   })
   return (
-    <Overlay title="Substitution" width={60} height={13} footer="Tab next · ←→ team · Enter submit · Esc cancel">
+    <Overlay title="Substitution" width={72} height={13} footer="Tab next · ←→ team · Enter submit · Esc cancel">
       <box flexDirection="row" height={1}>
         {label(0, "Team")}
         {([0, 1] as const).map((s) => (
@@ -199,7 +199,7 @@ const SubDialog = (
       <box flexDirection="row" height={1} marginTop={1}>
         {label(1, "Slot")}
         <input width={4} value={form.slot} onInput={(v) => onChange((f) => ({ ...f, slot: v }))} {...inputProps(1)} />
-        <text fg={theme.dim}>{`  1-9, 0 = pitcher not batting · now: ${occupant === undefined ? "—" : playerName(game, occupant)}`}</text>
+        <text fg={theme.dim}>{`  0 = pitcher not batting · now: ${occupant === undefined ? "—" : playerName(game, occupant)}`}</text>
       </box>
       <box flexDirection="row" height={1} marginTop={1}>
         {label(2, "Position")}
@@ -210,10 +210,10 @@ const SubDialog = (
       </box>
       <box flexDirection="row" height={1} marginTop={1}>
         {label(3, "Player")}
-        <input width={36} value={form.name} placeholder="name (an existing player to move him)" onInput={(v) => onChange((f) => ({ ...f, name: v }))} {...inputProps(3)} />
+        <input width={36} value={form.name} placeholder="player name" onInput={(v) => onChange((f) => ({ ...f, name: v }))} {...inputProps(3)} />
       </box>
       <text marginTop={1} fg={error === undefined ? theme.dim : theme.red}>
-        {error ?? "Shortcuts: ph <name>, pr <base> <name>, pitcher <name>"}
+        {error ?? "An existing player's name moves him to the new position."}
       </text>
     </Overlay>
   )
@@ -236,7 +236,8 @@ const CommandBar = (
     readonly focused: boolean
   }
 ) => {
-  const preview = previewLine(text, game)
+  const issues = game === undefined ? [] : defenseIssues(game)
+  const preview = text.trim() === "" && issues.length > 0 ? { text: `⚠ ${issues[0]}`, error: true } : previewLine(text, game)
   const recent = state.log
     .flatMap((l) => l.text.split("\n").map((t) => ({ kind: l.kind, text: l.kind === "input" ? `› ${t}` : t })))
     .slice(-3)
@@ -348,16 +349,16 @@ export const ScoringScreen = ({ store, state }: { readonly store: ScorerStore; r
       return
     }
     if (ch !== "" && isPitchCode(ch) && ch !== ".") {
-      const next = state.pitches + ch.toUpperCase()
-      void store.run(Scorer.use((s) => s.addPitch(ch)))
-      const implied = impliedEvent(next)
-      if (implied !== undefined) {
-        setText(implied)
-        setMode("event")
-      } else if (inPlay(next)) {
-        setText("")
-        setMode("event")
-      }
+      void store.run(Scorer.use((s) => s.addPitch(ch))).then((next) => {
+        const implied = impliedEvent(next)
+        if (implied !== undefined) {
+          setText(implied)
+          setMode("event")
+        } else if (inPlay(next)) {
+          setText("")
+          setMode("event")
+        }
+      })
     }
   }
 
