@@ -128,6 +128,8 @@ export interface PlayLogEntry {
   readonly basesBefore: Bases
   readonly basesAfter: Bases
   readonly runsScored: ReadonlyArray<string>
+  /** Runs batted in by the batter on this play. */
+  readonly rbi: number
   readonly scoreAfter: readonly [number, number]
 }
 

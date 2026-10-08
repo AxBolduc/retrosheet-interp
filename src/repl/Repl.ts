@@ -78,7 +78,7 @@ const helpText = (st: Style) =>
     st.dim("Teams: away/visitor/0/v or home/1/h. Type 'help notation' for event syntax.")
   ].join("\n")
 
-const notationText = (st: Style) =>
+export const notationText = (st: Style) =>
   [
     st.bold("Event syntax:") + " basic[/modifier...][.advance;advance...]",
     "",
@@ -315,26 +315,47 @@ export const makeHandler = (st: Style) => {
 
   /** Handle one line of input. */
   return Effect.fnUntraced(function*(rawLine: string) {
-    const line = rawLine.trim()
-    if (line === "" || line.startsWith("#")) return say("")
+    const input = classifyLine(rawLine)
     const session = yield* Session
-    if (looksLikeRecord(line)) {
-      const result = yield* Effect.result(session.submitLine(line))
-      return say(Result.isFailure(result) ? errorText(result.failure) : narrate(result.success, st))
+    switch (input._tag) {
+      case "Empty":
+        return say("")
+      case "Record": {
+        const result = yield* Effect.result(session.submitLine(input.line))
+        return say(Result.isFailure(result) ? errorText(result.failure) : narrate(result.success, st))
+      }
+      case "Command":
+        return yield* runCommand(input.name, input.args)
+      case "Event": {
+        const result = yield* Effect.result(session.submitEvent(input.event, input.pitches, countFromPitches(input.pitches)))
+        return say(Result.isFailure(result) ? errorText(result.failure) : narrate(result.success, st))
+      }
+      case "Unknown":
+        return say(errorText({ message: `unknown command or record "${input.word}" (type help)` }))
     }
-    const [first = "", ...rest] = line.replace(/^[:.]/, "").split(/\s+/)
-    const command = findCommand(first.toLowerCase())
-    if (command !== undefined && (first === first.toLowerCase() || line.startsWith(":"))) {
-      return yield* runCommand(command, rest)
-    }
-    if (/^[A-Z0-9]/.test(first)) {
-      // Shorthand event for the current batter: EVENT [pitches]
-      const pitches = rest[0] ?? ""
-      const result = yield* Effect.result(session.submitEvent(first, pitches, countFromPitches(pitches)))
-      return say(Result.isFailure(result) ? errorText(result.failure) : narrate(result.success, st))
-    }
-    return say(errorText({ message: `unknown command or record "${first}" (type help)` }))
   })
+}
+
+/** What a line of input is. */
+export type InputLine =
+  | { readonly _tag: "Empty" }
+  | { readonly _tag: "Record"; readonly line: string }
+  | { readonly _tag: "Command"; readonly name: string; readonly args: ReadonlyArray<string> }
+  /** Shorthand event for the current batter: `EVENT [pitches]`. */
+  | { readonly _tag: "Event"; readonly event: string; readonly pitches: string }
+  | { readonly _tag: "Unknown"; readonly word: string }
+
+export const classifyLine = (rawLine: string): InputLine => {
+  const line = rawLine.trim()
+  if (line === "" || line.startsWith("#")) return { _tag: "Empty" }
+  if (looksLikeRecord(line)) return { _tag: "Record", line }
+  const [first = "", ...rest] = line.replace(/^[:.]/, "").split(/\s+/)
+  const command = findCommand(first.toLowerCase())
+  if (command !== undefined && (first === first.toLowerCase() || line.startsWith(":"))) {
+    return { _tag: "Command", name: command, args: rest }
+  }
+  if (/^[A-Z0-9]/.test(first)) return { _tag: "Event", event: first, pitches: rest[0] ?? "" }
+  return { _tag: "Unknown", word: first }
 }
 
 /** Tab completion: commands, record keywords and player ids. */

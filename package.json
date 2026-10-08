@@ -8,7 +8,8 @@
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run",
-    "validate": "tsx scripts/validate-season.ts"
+    "validate": "tsx scripts/validate-season.ts",
+    "tui": "tsx src/tui/main.tsx"
   },
   "repository": {
     "type": "git",
@@ -38,7 +39,8 @@
     "vitest": "^5.0.3"
   },
   "bin": {
-    "retro": "dist/src/main.js"
+    "retro": "dist/src/main.js",
+    "retro-tui": "dist/src/tui/main.js"
   },
   "engines": {
     "node": ">=26.4.0"

@@ -460,6 +460,7 @@ const applyPlay = Effect.fnUntraced(function*(d: Draft, rec: Extract<RetroRecord
     basesBefore,
     basesAfter: structuredClone(d.bases),
     runsScored: scored,
+    rbi,
     scoreAfter: [d.score[0], d.score[1]]
   })
 
