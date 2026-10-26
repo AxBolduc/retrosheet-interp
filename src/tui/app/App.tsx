@@ -13,9 +13,11 @@ export interface AppProps {
   /** Directory to autosave new games in (undefined: don't autosave). */
   readonly autosaveDir: string | undefined
   readonly onQuit: () => void
+  /** Open the MLB game picker on the setup screen straight away. */
+  readonly openMlb?: boolean
 }
 
-export const App = ({ store, autosaveDir, onQuit }: AppProps) => {
+export const App = ({ store, autosaveDir, onQuit, openMlb = false }: AppProps) => {
   const state = useSyncExternalStore(store.subscribe, store.getSnapshot)
   const [screen, setScreen] = useState<"setup" | "scoring">(() => (currentGame(state) === undefined ? "setup" : "scoring"))
   const renderer = useRenderer()
@@ -29,6 +31,6 @@ export const App = ({ store, autosaveDir, onQuit }: AppProps) => {
   }, [renderer])
 
   return screen === "setup" || currentGame(state) === undefined
-    ? <SetupScreen store={store} autosaveDir={autosaveDir} onStarted={() => setScreen("scoring")} />
+    ? <SetupScreen store={store} autosaveDir={autosaveDir} openMlb={openMlb} onStarted={() => setScreen("scoring")} />
     : <ScoringScreen store={store} state={state} />
 }

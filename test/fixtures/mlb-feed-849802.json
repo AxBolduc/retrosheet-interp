@@ -1,0 +1,855 @@
+{
+ "gameData": {
+  "game": {
+   "pk": 849802,
+   "type": "W",
+   "doubleHeader": "N",
+   "id": "2026/10/24/tbamlb-milmlb-1",
+   "gamedayType": "P",
+   "tiebreaker": "N",
+   "gameNumber": 1,
+   "calendarEventID": "14-849802-2026-10-24",
+   "season": "2026",
+   "seasonDisplay": "2026"
+  },
+  "datetime": {
+   "officialDate": "2026-10-24"
+  },
+  "status": {
+   "detailedState": "Warmup"
+  },
+  "teams": {
+   "away": {
+    "id": 139,
+    "name": "Tampa Bay Rays",
+    "abbreviation": "TB"
+   },
+   "home": {
+    "id": 158,
+    "name": "Milwaukee Brewers",
+    "abbreviation": "MIL"
+   }
+  },
+  "venue": {
+   "id": 32,
+   "name": "American Family Field"
+  },
+  "probablePitchers": {
+   "away": {
+    "id": 656876,
+    "fullName": "Drew Rasmussen",
+    "link": "/api/v1/people/656876"
+   },
+   "home": {
+    "id": 701656,
+    "fullName": "Logan Henderson",
+    "link": "/api/v1/people/701656"
+   }
+  }
+ },
+ "liveData": {
+  "linescore": {
+   "scheduledInnings": 9
+  },
+  "boxscore": {
+   "teams": {
+    "away": {
+     "team": {
+      "id": 139,
+      "name": "Tampa Bay Rays",
+      "abbreviation": "TB"
+     },
+     "battingOrder": [
+      650490,
+      666018,
+      802415,
+      691406,
+      689414,
+      680700,
+      676356,
+      683748,
+      670764
+     ],
+     "pitchers": [
+      656876
+     ],
+     "bench": [
+      663743,
+      622761,
+      656775,
+      668723,
+      810938
+     ],
+     "bullpen": [
+      641329,
+      592155,
+      664076,
+      643377,
+      687330,
+      607259,
+      571927,
+      642547,
+      693855,
+      642121,
+      669330
+     ],
+     "players": {
+      "ID670764": {
+       "person": {
+        "id": 670764,
+        "fullName": "Taylor Walls"
+       },
+       "jerseyNumber": "6",
+       "position": {
+        "code": "6",
+        "abbreviation": "SS"
+       },
+       "battingOrder": "900",
+       "allPositions": [
+        {
+         "code": "6",
+         "abbreviation": "SS"
+        }
+       ]
+      },
+      "ID669330": {
+       "person": {
+        "id": 669330,
+        "fullName": "Tyler Wells"
+       },
+       "jerseyNumber": "68",
+       "position": {
+        "code": "1",
+        "abbreviation": "P"
+       }
+      },
+      "ID571927": {
+       "person": {
+        "id": 571927,
+        "fullName": "Steven Matz"
+       },
+       "jerseyNumber": "32",
+       "position": {
+        "code": "1",
+        "abbreviation": "P"
+       }
+      },
+      "ID680700": {
+       "person": {
+        "id": 680700,
+        "fullName": "Richie Palacios"
+       },
+       "jerseyNumber": "1",
+       "position": {
+        "code": "4",
+        "abbreviation": "2B"
+       },
+       "battingOrder": "600",
+       "allPositions": [
+        {
+         "code": "4",
+         "abbreviation": "2B"
+        }
+       ]
+      },
+      "ID622761": {
+       "person": {
+        "id": 622761,
+        "fullName": "Jorge Mateo"
+       },
+       "jerseyNumber": "9",
+       "position": {
+        "code": "6",
+        "abbreviation": "SS"
+       }
+      },
+      "ID668723": {
+       "person": {
+        "id": 668723,
+        "fullName": "Ryan Vilade"
+       },
+       "jerseyNumber": "26",
+       "position": {
+        "code": "9",
+        "abbreviation": "RF"
+       }
+      },
+      "ID802415": {
+       "person": {
+        "id": 802415,
+        "fullName": "Chandler Simpson"
+       },
+       "jerseyNumber": "14",
+       "position": {
+        "code": "7",
+        "abbreviation": "LF"
+       },
+       "battingOrder": "300",
+       "allPositions": [
+        {
+         "code": "7",
+         "abbreviation": "LF"
+        }
+       ]
+      },
+      "ID607259": {
+       "person": {
+        "id": 607259,
+        "fullName": "Nick Martinez"
+       },
+       "jerseyNumber": "28",
+       "position": {
+        "code": "1",
+        "abbreviation": "P"
+       }
+      },
+      "ID592155": {
+       "person": {
+        "id": 592155,
+        "fullName": "Cam Booser"
+       },
+       "jerseyNumber": "62",
+       "position": {
+        "code": "1",
+        "abbreviation": "P"
+       }
+      },
+      "ID676356": {
+       "person": {
+        "id": 676356,
+        "fullName": "Jonny DeLuca"
+       },
+       "jerseyNumber": "21",
+       "position": {
+        "code": "8",
+        "abbreviation": "CF"
+       },
+       "battingOrder": "700",
+       "allPositions": [
+        {
+         "code": "8",
+         "abbreviation": "CF"
+        }
+       ]
+      },
+      "ID693855": {
+       "person": {
+        "id": 693855,
+        "fullName": "Ian Seymour"
+       },
+       "jerseyNumber": "61",
+       "position": {
+        "code": "1",
+        "abbreviation": "P"
+       }
+      },
+      "ID642121": {
+       "person": {
+        "id": 642121,
+        "fullName": "Cole Sulser"
+       },
+       "jerseyNumber": "71",
+       "position": {
+        "code": "1",
+        "abbreviation": "P"
+       }
+      },
+      "ID664076": {
+       "person": {
+        "id": 664076,
+        "fullName": "Garrett Cleavinger"
+       },
+       "jerseyNumber": "60",
+       "position": {
+        "code": "1",
+        "abbreviation": "P"
+       }
+      },
+      "ID687330": {
+       "person": {
+        "id": 687330,
+        "fullName": "Kevin Kelly"
+       },
+       "jerseyNumber": "49",
+       "position": {
+        "code": "1",
+        "abbreviation": "P"
+       }
+      },
+      "ID689414": {
+       "person": {
+        "id": 689414,
+        "fullName": "Liam Hicks"
+       },
+       "jerseyNumber": "34",
+       "position": {
+        "code": "2",
+        "abbreviation": "C"
+       },
+       "battingOrder": "500",
+       "allPositions": [
+        {
+         "code": "2",
+         "abbreviation": "C"
+        }
+       ]
+      },
+      "ID642547": {
+       "person": {
+        "id": 642547,
+        "fullName": "Freddy Peralta"
+       },
+       "jerseyNumber": "51",
+       "position": {
+        "code": "1",
+        "abbreviation": "P"
+       }
+      },
+      "ID666018": {
+       "person": {
+        "id": 666018,
+        "fullName": "Jonathan Aranda"
+       },
+       "jerseyNumber": "8",
+       "position": {
+        "code": "3",
+        "abbreviation": "1B"
+       },
+       "battingOrder": "200",
+       "allPositions": [
+        {
+         "code": "3",
+         "abbreviation": "1B"
+        }
+       ]
+      },
+      "ID663743": {
+       "person": {
+        "id": 663743,
+        "fullName": "Nick Fortes"
+       },
+       "jerseyNumber": "40",
+       "position": {
+        "code": "2",
+        "abbreviation": "C"
+       }
+      },
+      "ID643377": {
+       "person": {
+        "id": 643377,
+        "fullName": "Griffin Jax"
+       },
+       "jerseyNumber": "22",
+       "position": {
+        "code": "1",
+        "abbreviation": "P"
+       }
+      },
+      "ID650490": {
+       "person": {
+        "id": 650490,
+        "fullName": "Yandy Díaz"
+       },
+       "jerseyNumber": "2",
+       "position": {
+        "code": "10",
+        "abbreviation": "DH"
+       },
+       "battingOrder": "100",
+       "allPositions": [
+        {
+         "code": "10",
+         "abbreviation": "DH"
+        }
+       ]
+      },
+      "ID810938": {
+       "person": {
+        "id": 810938,
+        "fullName": "Ben Williamson"
+       },
+       "jerseyNumber": "15",
+       "position": {
+        "code": "4",
+        "abbreviation": "2B"
+       }
+      },
+      "ID641329": {
+       "person": {
+        "id": 641329,
+        "fullName": "Bryan Baker"
+       },
+       "jerseyNumber": "47",
+       "position": {
+        "code": "1",
+        "abbreviation": "P"
+       }
+      },
+      "ID683748": {
+       "person": {
+        "id": 683748,
+        "fullName": "Victor Mesa Jr."
+       },
+       "jerseyNumber": "25",
+       "position": {
+        "code": "9",
+        "abbreviation": "RF"
+       },
+       "battingOrder": "800",
+       "allPositions": [
+        {
+         "code": "9",
+         "abbreviation": "RF"
+        }
+       ]
+      },
+      "ID691406": {
+       "person": {
+        "id": 691406,
+        "fullName": "Junior Caminero"
+       },
+       "jerseyNumber": "13",
+       "position": {
+        "code": "5",
+        "abbreviation": "3B"
+       },
+       "battingOrder": "400",
+       "allPositions": [
+        {
+         "code": "5",
+         "abbreviation": "3B"
+        }
+       ]
+      },
+      "ID656876": {
+       "person": {
+        "id": 656876,
+        "fullName": "Drew Rasmussen"
+       },
+       "jerseyNumber": "57",
+       "position": {
+        "code": "1",
+        "abbreviation": "P"
+       },
+       "allPositions": [
+        {
+         "code": "1",
+         "abbreviation": "P"
+        }
+       ]
+      },
+      "ID656775": {
+       "person": {
+        "id": 656775,
+        "fullName": "Cedric Mullins"
+       },
+       "jerseyNumber": "31",
+       "position": {
+        "code": "8",
+        "abbreviation": "CF"
+       }
+      }
+     }
+    },
+    "home": {
+     "team": {
+      "id": 158,
+      "name": "Milwaukee Brewers",
+      "abbreviation": "MIL"
+     },
+     "battingOrder": [
+      694192,
+      641343,
+      592885,
+      661388,
+      668930,
+      669003,
+      806198,
+      686217,
+      666152
+     ],
+     "pitchers": [
+      701656
+     ],
+     "bench": [
+      800325,
+      687401,
+      596142,
+      683734
+     ],
+     "bullpen": [
+      676879,
+      675660,
+      688107,
+      669084,
+      690986,
+      669160,
+      656730,
+      694819,
+      668941,
+      622608,
+      682842,
+      605540
+     ],
+     "players": {
+      "ID806198": {
+       "person": {
+        "id": 806198,
+        "fullName": "Cooper Pratt"
+       },
+       "jerseyNumber": "12",
+       "position": {
+        "code": "6",
+        "abbreviation": "SS"
+       },
+       "battingOrder": "700",
+       "allPositions": [
+        {
+         "code": "6",
+         "abbreviation": "SS"
+        }
+       ]
+      },
+      "ID701656": {
+       "person": {
+        "id": 701656,
+        "fullName": "Logan Henderson"
+       },
+       "jerseyNumber": "43",
+       "position": {
+        "code": "1",
+        "abbreviation": "P"
+       },
+       "allPositions": [
+        {
+         "code": "1",
+         "abbreviation": "P"
+        }
+       ]
+      },
+      "ID687401": {
+       "person": {
+        "id": 687401,
+        "fullName": "Joey Ortiz"
+       },
+       "jerseyNumber": "3",
+       "position": {
+        "code": "6",
+        "abbreviation": "SS"
+       }
+      },
+      "ID694192": {
+       "person": {
+        "id": 694192,
+        "fullName": "Jackson Chourio"
+       },
+       "jerseyNumber": "11",
+       "position": {
+        "code": "7",
+        "abbreviation": "LF"
+       },
+       "battingOrder": "100",
+       "allPositions": [
+        {
+         "code": "7",
+         "abbreviation": "LF"
+        }
+       ]
+      },
+      "ID592885": {
+       "person": {
+        "id": 592885,
+        "fullName": "Christian Yelich"
+       },
+       "jerseyNumber": "22",
+       "position": {
+        "code": "10",
+        "abbreviation": "DH"
+       },
+       "battingOrder": "300",
+       "allPositions": [
+        {
+         "code": "10",
+         "abbreviation": "DH"
+        }
+       ]
+      },
+      "ID641343": {
+       "person": {
+        "id": 641343,
+        "fullName": "Jake Bauers"
+       },
+       "jerseyNumber": "9",
+       "position": {
+        "code": "3",
+        "abbreviation": "1B"
+       },
+       "battingOrder": "200",
+       "allPositions": [
+        {
+         "code": "3",
+         "abbreviation": "1B"
+        }
+       ]
+      },
+      "ID686217": {
+       "person": {
+        "id": 686217,
+        "fullName": "Sal Frelick"
+       },
+       "jerseyNumber": "10",
+       "position": {
+        "code": "9",
+        "abbreviation": "RF"
+       },
+       "battingOrder": "800",
+       "allPositions": [
+        {
+         "code": "9",
+         "abbreviation": "RF"
+        }
+       ]
+      },
+      "ID682842": {
+       "person": {
+        "id": 682842,
+        "fullName": "Abner Uribe"
+       },
+       "jerseyNumber": "45",
+       "position": {
+        "code": "1",
+        "abbreviation": "P"
+       }
+      },
+      "ID668941": {
+       "person": {
+        "id": 668941,
+        "fullName": "JoJo Romero"
+       },
+       "jerseyNumber": "33",
+       "position": {
+        "code": "1",
+        "abbreviation": "P"
+       }
+      },
+      "ID683734": {
+       "person": {
+        "id": 683734,
+        "fullName": "Andrew Vaughn"
+       },
+       "jerseyNumber": "28",
+       "position": {
+        "code": "3",
+        "abbreviation": "1B"
+       }
+      },
+      "ID675660": {
+       "person": {
+        "id": 675660,
+        "fullName": "Shane Drohan"
+       },
+       "jerseyNumber": "55",
+       "position": {
+        "code": "1",
+        "abbreviation": "P"
+       }
+      },
+      "ID690986": {
+       "person": {
+        "id": 690986,
+        "fullName": "Kyle Harrison"
+       },
+       "jerseyNumber": "52",
+       "position": {
+        "code": "1",
+        "abbreviation": "P"
+       }
+      },
+      "ID676879": {
+       "person": {
+        "id": 676879,
+        "fullName": "Aaron Ashby"
+       },
+       "jerseyNumber": "26",
+       "position": {
+        "code": "1",
+        "abbreviation": "P"
+       }
+      },
+      "ID669003": {
+       "person": {
+        "id": 669003,
+        "fullName": "Garrett Mitchell"
+       },
+       "jerseyNumber": "5",
+       "position": {
+        "code": "8",
+        "abbreviation": "CF"
+       },
+       "battingOrder": "600",
+       "allPositions": [
+        {
+         "code": "8",
+         "abbreviation": "CF"
+        }
+       ]
+      },
+      "ID666152": {
+       "person": {
+        "id": 666152,
+        "fullName": "David Hamilton"
+       },
+       "jerseyNumber": "6",
+       "position": {
+        "code": "5",
+        "abbreviation": "3B"
+       },
+       "battingOrder": "900",
+       "allPositions": [
+        {
+         "code": "5",
+         "abbreviation": "3B"
+        }
+       ]
+      },
+      "ID661388": {
+       "person": {
+        "id": 661388,
+        "fullName": "William Contreras"
+       },
+       "jerseyNumber": "24",
+       "position": {
+        "code": "2",
+        "abbreviation": "C"
+       },
+       "battingOrder": "400",
+       "allPositions": [
+        {
+         "code": "2",
+         "abbreviation": "C"
+        }
+       ]
+      },
+      "ID688107": {
+       "person": {
+        "id": 688107,
+        "fullName": "Robert Gasser"
+       },
+       "jerseyNumber": "54",
+       "position": {
+        "code": "1",
+        "abbreviation": "P"
+       }
+      },
+      "ID668930": {
+       "person": {
+        "id": 668930,
+        "fullName": "Brice Turang"
+       },
+       "jerseyNumber": "2",
+       "position": {
+        "code": "4",
+        "abbreviation": "2B"
+       },
+       "battingOrder": "500",
+       "allPositions": [
+        {
+         "code": "4",
+         "abbreviation": "2B"
+        }
+       ]
+      },
+      "ID605540": {
+       "person": {
+        "id": 605540,
+        "fullName": "Brandon Woodruff"
+       },
+       "jerseyNumber": "53",
+       "position": {
+        "code": "1",
+        "abbreviation": "P"
+       }
+      },
+      "ID596142": {
+       "person": {
+        "id": 596142,
+        "fullName": "Gary Sánchez"
+       },
+       "jerseyNumber": "99",
+       "position": {
+        "code": "2",
+        "abbreviation": "C"
+       }
+      },
+      "ID694819": {
+       "person": {
+        "id": 694819,
+        "fullName": "Jacob Misiorowski"
+       },
+       "jerseyNumber": "32",
+       "position": {
+        "code": "1",
+        "abbreviation": "P"
+       }
+      },
+      "ID669084": {
+       "person": {
+        "id": 669084,
+        "fullName": "DL Hall"
+       },
+       "jerseyNumber": "37",
+       "position": {
+        "code": "1",
+        "abbreviation": "P"
+       }
+      },
+      "ID622608": {
+       "person": {
+        "id": 622608,
+        "fullName": "Antonio Senzatela"
+       },
+       "jerseyNumber": "49",
+       "position": {
+        "code": "1",
+        "abbreviation": "P"
+       }
+      },
+      "ID669160": {
+       "person": {
+        "id": 669160,
+        "fullName": "Dustin May"
+       },
+       "jerseyNumber": "21",
+       "position": {
+        "code": "1",
+        "abbreviation": "P"
+       }
+      },
+      "ID800325": {
+       "person": {
+        "id": 800325,
+        "fullName": "Luis Lara"
+       },
+       "jerseyNumber": "18",
+       "position": {
+        "code": "9",
+        "abbreviation": "RF"
+       }
+      },
+      "ID656730": {
+       "person": {
+        "id": 656730,
+        "fullName": "Trevor Megill"
+       },
+       "jerseyNumber": "29",
+       "position": {
+        "code": "1",
+        "abbreviation": "P"
+       }
+      }
+     }
+    }
+   }
+  }
+ }
+}
