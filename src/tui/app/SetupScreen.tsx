@@ -4,7 +4,8 @@
 import type { KeyEvent, SubmitEvent } from "@opentui/core"
 import { useKeyboard, useTerminalDimensions } from "@opentui/react"
 import { Effect } from "effect"
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
+import { MlbApi, type MlbGame } from "../../mlb/MlbApi.ts"
 import { positionAbbrev } from "../../retrosheet/Game.ts"
 import type { Side } from "../../retrosheet/Record.ts"
 import { Scorer } from "../Scorer.ts"
@@ -16,8 +17,11 @@ import {
   parsePosition,
   type SetupField,
   type SetupIssue,
+  type TeamSetup,
+  today,
   validateSetup
 } from "../Setup.ts"
+import { MlbPicker, type PickerState, shiftDate } from "./MlbPicker.tsx"
 import type { ScorerStore } from "./store.ts"
 import { theme } from "./theme.ts"
 
@@ -31,11 +35,8 @@ interface Form {
   readonly teams: readonly [TeamForm, TeamForm]
 }
 
-interface TeamForm {
-  readonly code: string
-  readonly lineup: ReadonlyArray<LineupEntry>
-  readonly pitcher: string
-}
+/** A team as entered; the name and roster come along when it was loaded from MLB. */
+type TeamForm = TeamSetup
 
 type FieldId =
   | { readonly _tag: "date" }
@@ -210,7 +211,7 @@ const TeamColumn = (
       border
       borderStyle="rounded"
       borderColor={active ? theme.borderFocus : theme.border}
-      title={side === 0 ? " Away (bats first) " : " Home "}
+      title={`${side === 0 ? " Away (bats first) " : " Home "}${team.name === undefined ? "" : `— ${team.name} `}`}
       titleColor={active ? theme.accent : theme.text}
       flexDirection="column"
       width={width}
@@ -258,10 +259,11 @@ const TeamColumn = (
 }
 
 export const SetupScreen = (
-  { store, onStarted, autosaveDir }: {
+  { store, onStarted, autosaveDir, openMlb = false }: {
     readonly store: ScorerStore
     readonly onStarted: () => void
     readonly autosaveDir: string | undefined
+    readonly openMlb?: boolean
   }
 ) => {
   const dims = useTerminalDimensions()
@@ -270,6 +272,68 @@ export const SetupScreen = (
   const [tried, setTried] = useState(false)
   const [opening, setOpening] = useState<string | undefined>(undefined)
   const [message, setMessage] = useState<string | undefined>(undefined)
+  const [notice, setNotice] = useState<string | undefined>(undefined)
+  const [picker, setPicker] = useState<PickerState | undefined>(undefined)
+  /** Bumped for every schedule request, so a slow answer for another day is ignored. */
+  const scheduleRequest = useRef(0)
+
+  const showSchedule = (date: string) => {
+    const request = ++scheduleRequest.current
+    setPicker((p) => ({ date, games: { _tag: "Loading" }, index: p?.date === date ? p.index : 0, opening: undefined, error: undefined }))
+    void store.run(MlbApi.use((api) => api.schedule(date))).then(
+      (games) => {
+        if (request !== scheduleRequest.current) return
+        setPicker((p) => p === undefined ? p : { ...p, games: { _tag: "Loaded", games }, index: Math.min(p.index, Math.max(0, games.length - 1)) })
+      },
+      (e: unknown) => {
+        if (request !== scheduleRequest.current) return
+        setPicker((p) => p === undefined ? p : { ...p, games: { _tag: "Failed", message: e instanceof Error ? e.message : String(e) } })
+      }
+    )
+  }
+
+  const openPicker = () => {
+    setMessage(undefined)
+    const date = /^\d{4}-\d{2}-\d{2}$/.test(form.date.trim()) ? form.date.trim() : today()
+    showSchedule(date)
+  }
+
+  const fillFromMlb = (game: MlbGame) => {
+    const loaded = toForm(game.setup)
+    setForm(loaded)
+    setTried(false)
+    setMessage(undefined)
+    setPicker(undefined)
+    const [away, home] = game.setup.teams
+    const label = `${away.name ?? away.code} @ ${home.name ?? home.code}`
+    const posted = game.lineupsPosted
+    if (posted[0] && posted[1]) {
+      setNotice(`${label}: lineups from mlb.com. Check them, then Ctrl+G to play ball.`)
+      setFocus({ _tag: "code", side: 0 })
+    } else {
+      const missing = posted[0] ? home.code : posted[1] ? away.code : "either team"
+      setNotice(
+        `${label}: no lineup posted yet for ${missing}. Teams, starting pitchers and rosters are filled in; enter the lineup, or Ctrl+L again later.`
+      )
+      setFocus({ _tag: "name", side: posted[0] ? 1 : 0, slot: 1 })
+    }
+  }
+
+  const choose = () => {
+    if (picker === undefined || picker.games._tag !== "Loaded" || picker.opening !== undefined) return
+    const chosen = picker.games.games[picker.index]
+    if (chosen === undefined) return
+    setPicker({ ...picker, opening: chosen, error: undefined })
+    void store.run(MlbApi.use((api) => api.game(chosen.gamePk))).then(
+      fillFromMlb,
+      (e: unknown) => setPicker((p) => p === undefined ? p : { ...p, opening: undefined, error: e instanceof Error ? e.message : String(e) })
+    )
+  }
+
+  useEffect(() => {
+    // Only on the first render.
+    if (openMlb) showSchedule(today())
+  }, [])
 
   const fields = fieldsFor(form)
   const index = focus === undefined ? -1 : fields.findIndex((f) => sameField(f.id, focus))
@@ -320,6 +384,23 @@ export const SetupScreen = (
   }
 
   useKeyboard((key: KeyEvent) => {
+    if (picker !== undefined) {
+      key.preventDefault()
+      const count = picker.games._tag === "Loaded" ? picker.games.games.length : 0
+      if (key.name === "escape") {
+        scheduleRequest.current++
+        setPicker(undefined)
+      } else if (key.name === "up" || key.name === "down") {
+        if (count > 0) setPicker({ ...picker, index: (picker.index + (key.name === "up" ? count - 1 : 1)) % count })
+      } else if (key.name === "left" || key.name === "right") {
+        showSchedule(shiftDate(picker.date, key.name === "left" ? -1 : 1))
+      } else if (key.name === "t") {
+        showSchedule(today())
+      } else if (key.name === "return") {
+        choose()
+      }
+      return
+    }
     if (opening !== undefined) {
       if (key.name === "escape") {
         setOpening(undefined)
@@ -343,6 +424,10 @@ export const SetupScreen = (
     } else if (key.ctrl && key.name === "e") {
       key.preventDefault()
       update(() => toForm(exampleSetup()))
+      setNotice(undefined)
+    } else if (key.ctrl && key.name === "l") {
+      key.preventDefault()
+      openPicker()
     } else if (key.ctrl && key.name === "o") {
       key.preventDefault()
       setMessage(undefined)
@@ -365,7 +450,7 @@ export const SetupScreen = (
       <box flexDirection="row" height={1} paddingLeft={1} backgroundColor={theme.panel}>
         <text fg={theme.yellow}>⚾ </text>
         <text fg={theme.text}>New game</text>
-        <text fg={theme.dim}>{"  — enter the lineups, then press Ctrl+G (or F5) to play ball"}</text>
+        <text fg={theme.dim}>{"  — enter the lineups (or Ctrl+L for an MLB game), then press Ctrl+G (or F5) to play ball"}</text>
       </box>
       <box
         border
@@ -401,7 +486,7 @@ export const SetupScreen = (
             key={side}
             side={side}
             form={form}
-            focus={opening === undefined ? focus : undefined}
+            focus={opening === undefined && picker === undefined ? focus : undefined}
             setForm={update}
             next={() => move(1)}
             issues={issues}
@@ -413,7 +498,8 @@ export const SetupScreen = (
         {issues.slice(0, 4).map((issue, i) => <text key={i} fg={theme.red} height={1}>{`✗ ${issue.message}`}</text>)}
         {issues.length > 4 && <text fg={theme.red}>{`  …and ${issues.length - 4} more`}</text>}
         {message !== undefined && opening === undefined && <text fg={theme.red}>{message}</text>}
-        {tried && issues.length === 0 && message === undefined && <text fg={theme.green}>Lineups look good.</text>}
+        {notice !== undefined && issues.length === 0 && message === undefined && <text fg={theme.green}>{notice}</text>}
+        {tried && issues.length === 0 && message === undefined && notice === undefined && <text fg={theme.green}>Lineups look good.</text>}
       </box>
       {opening !== undefined && (
         <box
@@ -441,9 +527,10 @@ export const SetupScreen = (
           {message !== undefined && <text fg={theme.red}>{message}</text>}
         </box>
       )}
+      {picker !== undefined && <MlbPicker state={picker} />}
       <box flexDirection="row" height={1} paddingLeft={1} backgroundColor={theme.panel}>
         <text fg={theme.dim}>
-          Tab/Enter next · Shift+Tab back · ↑↓ rows · Ctrl+G start · Ctrl+E example lineups · Ctrl+O open file · Ctrl+C quit
+          Tab/Enter next · Shift+Tab back · ↑↓ rows · Ctrl+G start · Ctrl+L MLB games · Ctrl+E example · Ctrl+O open file · Ctrl+C quit
         </text>
       </box>
     </box>

@@ -12,7 +12,7 @@ import { type SessionState, Session } from "../Session.ts"
 import { currentBatterId, type GameState, otherSide, playerName } from "../retrosheet/Game.ts"
 import { formatRecord, RetroRecord, type Side } from "../retrosheet/Record.ts"
 import { isPitchCode } from "./Pitches.ts"
-import { type GameSetup, makePlayerId, parsePosition, setupRecords } from "./Setup.ts"
+import { type GameSetup, makePlayerId, parsePosition, type RosterPlayer, setupRecords } from "./Setup.ts"
 
 export interface LogLine {
   readonly kind: "input" | "output" | "error"
@@ -28,6 +28,8 @@ export interface ScorerState {
   readonly savePath: string | undefined
   /** Set when a command asked to leave. */
   readonly quit: boolean
+  /** Each team's roster for the game, when the setup came with one (away, home). */
+  readonly rosters: readonly [ReadonlyArray<RosterPlayer>, ReadonlyArray<RosterPlayer>]
 }
 
 export interface Outcome {
@@ -80,6 +82,21 @@ export const defenseIssues = (game: GameState): ReadonlyArray<string> => {
   return issues
 }
 
+/**
+ * A roster player by full name, last name, or the start of either, if only
+ * one matches: "yelich", "Chris Yel" → "Christian Yelich".
+ */
+export const findRosterPlayer = (roster: ReadonlyArray<RosterPlayer>, name: string): RosterPlayer | undefined => {
+  const fold = (s: string) => s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim()
+  const wanted = fold(name)
+  if (wanted === "") return undefined
+  const unique = (matches: ReadonlyArray<RosterPlayer>) => (matches.length === 1 ? matches[0] : undefined)
+  const lastName = (p: RosterPlayer) => fold(p.name).split(/\s+/).slice(1).join(" ")
+  return roster.find((p) => fold(p.name) === wanted) ??
+    unique(roster.filter((p) => lastName(p) === wanted)) ??
+    unique(roster.filter((p) => fold(p.name).startsWith(wanted) || lastName(p).startsWith(wanted)))
+}
+
 const teamCodeOrSide = (game: GameState, side: Side) => game.teams[side].code ?? (side === 0 ? "Away" : "Home")
 
 export const currentGame = (s: ScorerState): GameState | undefined => s.session.games[s.session.current]?.state
@@ -130,7 +147,8 @@ const makeScorer = Effect.gen(function*() {
     pitches: "",
     log: [],
     savePath: undefined,
-    quit: false
+    quit: false,
+    rosters: [[], []]
   })
 
   const update = (f: (s: ScorerState) => ScorerState) => SubscriptionRef.update(ref, f)
@@ -187,8 +205,12 @@ const makeScorer = Effect.gen(function*() {
     Effect.gen(function*() {
       const g = yield* game
       if (g === undefined) return yield* fail(echo ?? "sub", "no game in progress")
-      const name = sub.name.trim()
-      if (name === "") return yield* fail(echo ?? "sub", "the new player needs a name")
+      const typed = sub.name.trim()
+      if (typed === "") return yield* fail(echo ?? "sub", "the new player needs a name")
+      const { rosters } = yield* SubscriptionRef.get(ref)
+      const name = findPlayer(g, sub.side, typed) === undefined
+        ? findRosterPlayer(rosters[sub.side], typed)?.name ?? typed
+        : typed
       const existing = findPlayer(g, sub.side, name)
       const playerId = existing ?? makePlayerId(name, new Set(Object.keys(g.players)))
       const record = RetroRecord.Sub({
@@ -287,12 +309,17 @@ const makeScorer = Effect.gen(function*() {
         yield* session.reset
         yield* session.loadText(records.map(formatRecord).join("\n"), "lineups")
         yield* session.clearHistory
+        yield* update((s) => ({ ...s, rosters: [setup.teams[0].roster ?? [], setup.teams[1].roster ?? []] }))
         yield* log({ kind: "output", text: `Game ${records[0]!._tag === "Id" ? records[0]!.gameId : ""} set up. Play ball!` })
         yield* sync({ resetPitches: true })
       }),
 
     /** Load an event file to resume a game; the load itself can't be undone. */
-    load: (file: string) => Effect.tap(runLine(`load ${file}`), (o) => (o.ok ? session.clearHistory : Effect.void)),
+    load: (file: string) =>
+      Effect.tap(
+        runLine(`load ${file}`),
+        (o) => (o.ok ? Effect.andThen(session.clearHistory, update((s) => ({ ...s, rosters: [[], []] }))) : Effect.void)
+      ),
 
     setSavePath: (savePath: string | undefined) =>
       Effect.andThen(update((s) => ({ ...s, savePath })), sync({ resetPitches: false })),

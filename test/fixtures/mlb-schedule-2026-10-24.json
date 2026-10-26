@@ -1,0 +1,75 @@
+{
+ "dates": [
+  {
+   "date": "2026-10-24",
+   "games": [
+    {
+     "gamePk": 849802,
+     "gameType": "W",
+     "season": "2026",
+     "gameDate": "2026-10-25T00:00:00Z",
+     "officialDate": "2026-10-24",
+     "status": {
+      "abstractGameState": "Live",
+      "codedGameState": "P",
+      "detailedState": "Warmup",
+      "statusCode": "PW",
+      "startTimeTBD": false,
+      "abstractGameCode": "L"
+     },
+     "teams": {
+      "away": {
+       "team": {
+        "id": 139,
+        "name": "Tampa Bay Rays",
+        "abbreviation": "TB"
+       },
+       "probablePitcher": {
+        "id": 656876,
+        "fullName": "Drew Rasmussen"
+       },
+       "score": 0
+      },
+      "home": {
+       "team": {
+        "id": 158,
+        "name": "Milwaukee Brewers",
+        "abbreviation": "MIL"
+       },
+       "probablePitcher": {
+        "id": 701656,
+        "fullName": "Logan Henderson"
+       },
+       "score": 0
+      }
+     },
+     "venue": {
+      "id": 32,
+      "name": "American Family Field",
+      "link": "/api/v1/venues/32",
+      "active": true,
+      "season": "2026"
+     },
+     "gameNumber": 1,
+     "publicFacing": true,
+     "doubleHeader": "N",
+     "gamedayType": "P",
+     "tiebreaker": "N",
+     "calendarEventID": "14-849802-2026-10-24",
+     "seasonDisplay": "2026",
+     "dayNight": "night",
+     "description": "World Series Game 2",
+     "scheduledInnings": 9,
+     "reverseHomeAwayStatus": false,
+     "inningBreakLength": 175,
+     "gamesInSeries": 7,
+     "seriesGameNumber": 2,
+     "seriesDescription": "World Series",
+     "recordSource": "S",
+     "ifNecessary": "N",
+     "ifNecessaryDescription": "Normal Game"
+    }
+   ]
+  }
+ ]
+}

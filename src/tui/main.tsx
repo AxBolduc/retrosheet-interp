@@ -4,12 +4,14 @@
  *
  *   retro-tui                  set up a new game (lineups), then score it
  *   retro-tui game.EVN         resume scoring a game from an event file
+ *   retro-tui --mlb            pick one of today's MLB games, lineups filled in
  */
 import { createCliRenderer } from "@opentui/core"
 import { createRoot } from "@opentui/react"
 import { NodeRuntime, NodeServices } from "@effect/platform-node"
 import { Console, Deferred, Effect, Layer, Option } from "effect"
 import { Argument, Command, Flag } from "effect/cli"
+import { MlbApi } from "../mlb/MlbApi.ts"
 import { Session } from "../Session.ts"
 import { App } from "./app/App.tsx"
 import { makeScorerStore } from "./app/store.ts"
@@ -32,11 +34,19 @@ const saveTo = Flag.File("save").pipe(
 
 const noSave = Flag.Boolean("no-save").pipe(Flag.withDescription("don't save automatically"), Flag.withDefault(false))
 
-const ScorerLayer = Scorer.layer.pipe(Layer.provideMerge(Session.layer), Layer.provide(NodeServices.layer))
+const mlb = Flag.Boolean("mlb").pipe(
+  Flag.withDescription("start by picking one of today's MLB games, with lineups and rosters from mlb.com"),
+  Flag.withDefault(false)
+)
 
-const tui = Command.make("retro-tui", { file, saveDir, saveTo, noSave }, ({ file, saveDir, saveTo, noSave }) =>
+const AppLayer = Layer.merge(
+  Scorer.layer.pipe(Layer.provideMerge(Session.layer), Layer.provide(NodeServices.layer)),
+  MlbApi.layer
+)
+
+const tui = Command.make("retro-tui", { file, saveDir, saveTo, noSave, mlb }, ({ file, saveDir, saveTo, noSave, mlb }) =>
   Effect.gen(function*() {
-    const store = yield* Effect.promise(() => makeScorerStore(ScorerLayer))
+    const store = yield* Effect.promise(() => makeScorerStore(AppLayer))
     if (Option.isSome(file)) {
       const outcome = yield* Effect.promise(() => store.run(Scorer.use((s) => s.load(file.value))))
       if (!outcome.ok) {
@@ -53,7 +63,7 @@ const tui = Command.make("retro-tui", { file, saveDir, saveTo, noSave }, ({ file
     }
     renderer.on("destroy", () => Deferred.doneUnsafe(done, Effect.void))
     const autosaveDir = noSave || Option.isSome(saveTo) ? undefined : Option.getOrElse(saveDir, () => ".")
-    createRoot(renderer).render(<App store={store} autosaveDir={autosaveDir} onQuit={quit} />)
+    createRoot(renderer).render(<App store={store} autosaveDir={autosaveDir} onQuit={quit} openMlb={mlb} />)
     yield* Deferred.await(done)
     yield* Effect.promise(() => store.dispose())
     const saved = store.getSnapshot().savePath

@@ -13,9 +13,23 @@ export interface LineupEntry {
   readonly position: string
 }
 
+/** A player on a team's roster for the game, e.g. from MLB's lineup card. */
+export interface RosterPlayer {
+  readonly name: string
+  /** Primary position abbreviation: P, C, SS, DH... */
+  readonly position: string
+  readonly jersey: string
+  /** Starting lineup, starting pitcher, position players on the bench, or the bullpen. */
+  readonly role: "lineup" | "starter" | "bench" | "bullpen"
+}
+
 export interface TeamSetup {
   /** Team code, e.g. NYA. */
   readonly code: string
+  /** Full team name, e.g. "New York Yankees", when known. */
+  readonly name?: string
+  /** Everyone available for the game, when known: used to look up substitutes. */
+  readonly roster?: ReadonlyArray<RosterPlayer>
   /** Batting order slots 1-9. */
   readonly lineup: ReadonlyArray<LineupEntry>
   /** The starting pitcher when the team uses a DH (he doesn't bat). */

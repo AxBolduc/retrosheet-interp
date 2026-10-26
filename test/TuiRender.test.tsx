@@ -1,7 +1,9 @@
 import { NodeServices } from "@effect/platform-node"
 import type { KeyInput } from "@opentui/core/testing"
 import { testRender } from "@opentui/react/test-utils"
-import { Layer } from "effect"
+import { Effect, Layer, Schema } from "effect"
+import { readFileSync } from "node:fs"
+import { GameFeed, MlbApi, toMlbGame, toScheduledGames } from "../src/mlb/MlbApi.ts"
 import { afterEach, assert, describe, it } from "vitest"
 import { Session } from "../src/Session.ts"
 import { App } from "../src/tui/app/App.tsx"
@@ -16,11 +18,22 @@ afterEach(async () => {
   cleanup = []
 })
 
-const mount = async (width = 140, height = 45) => {
+const fixture = (name: string): unknown => JSON.parse(readFileSync(new URL(`./fixtures/${name}`, import.meta.url), "utf8"))
+
+/** MLB data from the fixtures: the same one game every day. */
+const FixtureMlbApi = Layer.succeed(MlbApi)(MlbApi.of({
+  schedule: () => Effect.succeed(toScheduledGames(fixture("mlb-schedule-2026-10-24.json") as never)),
+  game: () => Effect.succeed(toMlbGame(Schema.decodeUnknownSync(GameFeed)(fixture("mlb-feed-849802.json"))))
+}))
+
+const mount = async (width = 140, height = 45, options: { readonly openMlb?: boolean } = {}) => {
   const store: ScorerStore = await makeScorerStore(
-    Scorer.layer.pipe(Layer.provideMerge(Session.layer), Layer.provide(NodeServices.layer))
+    Layer.merge(Scorer.layer.pipe(Layer.provideMerge(Session.layer), Layer.provide(NodeServices.layer)), FixtureMlbApi)
   )
-  const ui: Setup = await testRender(<App store={store} autosaveDir={undefined} onQuit={() => {}} />, { width, height })
+  const ui: Setup = await testRender(
+    <App store={store} autosaveDir={undefined} onQuit={() => {}} openMlb={options.openMlb ?? false} />,
+    { width, height }
+  )
   cleanup.push(() => store.dispose(), () => ui.renderer.destroy())
   // Scorer updates arrive asynchronously from the Effect runtime, outside act().
   ;(globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = false
@@ -115,5 +128,35 @@ describe("terminal UI", () => {
     await app.press("RETURN")
     f = await app.frame()
     assert.include(f, "no runner on 1st")
+  })
+
+  it("fills in a game from MLB and scores it with roster substitutions", async () => {
+    const app = await mount(140, 45)
+    await app.press("l", { ctrl: true })
+    let f = await app.frame()
+    assert.include(f, "MLB games")
+    assert.include(f, "Tampa Bay Rays @ Milwaukee Brewers")
+    assert.include(f, "Rasmussen vs Henderson")
+    await app.press("RETURN")
+    f = await app.frame()
+    assert.notInclude(f, "Probable pitchers")
+    assert.include(f, "— Tampa Bay Rays")
+    assert.include(f, "lineups from mlb.com")
+    assert.include(f, "Yandy Díaz")
+    assert.include(f, "Drew Rasmussen")
+
+    await app.press("g", { ctrl: true })
+    f = await app.frame()
+    assert.include(f, "At bat Yandy Díaz")
+
+    await app.press("n", { ctrl: true })
+    f = await app.frame()
+    assert.include(f, "Bench:")
+    await app.type("Mullins")
+    f = await app.frame()
+    assert.include(f, "→ Cedric Mullins (CF, #31)")
+    await app.press("RETURN")
+    f = await app.frame()
+    assert.include(f, "At bat Cedric Mullins")
   })
 })

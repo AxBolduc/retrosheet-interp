@@ -72,12 +72,24 @@ Requires Node 26.4+ (see `.node-version`).
 npm run tui                                   # set up a new game, then score it
 npm run tui -- examples/NYA202303300.EVA      # resume a game from an event file
 npm run tui -- --save game.EVN                # choose where to autosave
+npm run tui -- --mlb                          # pick one of today's MLB games
 ```
 
 1. **Setup**: enter the date, DH and innings, team codes, and both batting
    orders with positions (`SS`, `6`, `DH`...). Tab or the arrow keys move
    between fields. `Ctrl+E` fills in example lineups, `Ctrl+O` opens an event
    file, and `Ctrl+G` (or F5) starts the game.
+
+   `Ctrl+L` (or `--mlb` at startup) lists the day's MLB games from
+   [the MLB Stats API](https://statsapi.mlb.com), the data behind mlb.com,
+   with start times, status and probable pitchers. `←→` changes the day.
+   Pick a game and the form is filled in: date, doubleheader game number,
+   DH, the park, both teams (as Retrosheet codes), the starting lineups with
+   positions, and the starting pitchers. Before the lineups are announced you
+   get the teams, probable pitchers and rosters, and can press `Ctrl+L` again
+   later. Each team's roster for the game comes along too, so substitutions
+   can name a bench or bullpen player by last name (`ph Mullins`,
+   `pitcher Uribe`), and the substitution form lists who's available.
 2. **Scoring**: type events in Retrosheet notation (`S8/G.1-2`, `K`,
    `64(1)3/GDP`, `SB2`), with a live description as you type. `Esc` switches
    to the pitch pad, where you key pitches one at a time (`B C S F X`...) and
@@ -106,6 +118,7 @@ and `Ctrl+C` quits.
 | `src/retrosheet/Engine.ts` | applies records to an immutable `GameState`: runner movement, outs, runs, half innings, game end, substitutions, stats |
 | `src/Session.ts` | `Session` service: multiple games, undo history, loading and exporting |
 | `src/repl/*` | command handling, rendering, and a readline-based `LineReader` service |
+| `src/mlb/*` | `MlbApi` service (Effect `HttpClient` + `Schema`): the schedule and a game's lineups and rosters from the MLB Stats API, mapped to Retrosheet team and park codes |
 | `src/tui/*` | the terminal UI: `Setup` (lineups → records), `Scorer` (Effect service: pitch buffer, log, autosave, substitution shortcuts), `Scorebook` (grid model), `app/*` (OpenTUI + React screens) |
 
 Runner movement follows Retrosheet's conventions. Explicit advances override

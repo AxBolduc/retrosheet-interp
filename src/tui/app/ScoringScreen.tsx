@@ -14,8 +14,8 @@ import { parseEvent } from "../../retrosheet/Event.ts"
 import { currentBatterId, type GameState, otherSide, playerName, positionAbbrev, teamCode } from "../../retrosheet/Game.ts"
 import type { Side } from "../../retrosheet/Record.ts"
 import { countAfter, impliedEvent, inPlay, isPitchCode, pitchCodes } from "../Pitches.ts"
-import { currentGame, defenseIssues, Scorer, type ScorerState } from "../Scorer.ts"
-import { parsePosition } from "../Setup.ts"
+import { currentGame, defenseIssues, findRosterPlayer, Scorer, type ScorerState } from "../Scorer.ts"
+import { parsePosition, type RosterPlayer } from "../Setup.ts"
 import { GameView } from "./GameView.tsx"
 import { Scoreboard } from "./Scoreboard.tsx"
 import { ScorebookView } from "./ScorebookView.tsx"
@@ -164,8 +164,10 @@ const subPosition = (text: string) => {
 }
 
 const SubDialog = (
-  { game, form, field, onChange, error }: {
+  { game, roster, form, field, onChange, error }: {
     readonly game: GameState
+    /** The team's roster for the game, if known. */
+    readonly roster: ReadonlyArray<RosterPlayer>
     readonly form: SubForm
     readonly field: number
     readonly onChange: (f: (form: SubForm) => SubForm) => void
@@ -176,6 +178,22 @@ const SubDialog = (
   const slot = Number(form.slot)
   const occupant = Number.isInteger(slot) && slot >= 0 && slot <= 9 ? team.lineup[slot] : undefined
   const pos = subPosition(form.position)
+  const appeared = new Set(team.appeared.map((id) => playerName(game, id)))
+  const available = roster.filter((p) => !appeared.has(p.name) && p.role !== "lineup" && p.role !== "starter")
+  const match = findRosterPlayer(roster, form.name)
+  const pitching = pos === 1
+  const hint = form.name.trim() !== ""
+    ? match === undefined
+      ? "Not on the roster: a new player by that name."
+      : `→ ${match.name} (${match.position}${match.jersey === "" ? "" : `, #${match.jersey}`})`
+    : available.length === 0
+    ? ""
+    : `${pitching ? "Bullpen" : "Bench"}: ${
+      available
+        .filter((p) => (p.role === "bullpen") === pitching)
+        .map((p) => p.name.split(/\s+/).slice(1).join(" ") || p.name)
+        .join(", ")
+    }`
   const label = (i: number, text: string) => (
     <text width={10} fg={field === i ? theme.accent : theme.dim}>{text}</text>
   )
@@ -187,7 +205,7 @@ const SubDialog = (
     focusedTextColor: theme.text
   })
   return (
-    <Overlay title="Substitution" width={72} height={13} footer="Tab next · ←→ team · Enter submit · Esc cancel">
+    <Overlay title="Substitution" width={72} height={roster.length === 0 ? 13 : 15} footer="Tab next · ←→ team · Enter submit · Esc cancel">
       <box flexDirection="row" height={1}>
         {label(0, "Team")}
         {([0, 1] as const).map((s) => (
@@ -210,8 +228,13 @@ const SubDialog = (
       </box>
       <box flexDirection="row" height={1} marginTop={1}>
         {label(3, "Player")}
-        <input width={36} value={form.name} placeholder="player name" onInput={(v) => onChange((f) => ({ ...f, name: v }))} {...inputProps(3)} />
+        <input width={36} value={form.name} placeholder={roster.length === 0 ? "player name" : "name, or just the last name"} onInput={(v) => onChange((f) => ({ ...f, name: v }))} {...inputProps(3)} />
       </box>
+      {roster.length > 0 && (
+        <text marginTop={1} height={1} fg={match === undefined && form.name.trim() !== "" ? theme.orange : theme.dim}>
+          {hint.length > 66 ? `${hint.slice(0, 65)}…` : hint}
+        </text>
+      )}
       <text marginTop={1} fg={error === undefined ? theme.dim : theme.red}>
         {error ?? "An existing player's name moves him to the new position."}
       </text>
@@ -446,7 +469,7 @@ export const ScoringScreen = ({ store, state }: { readonly store: ScorerStore; r
       {modal?._tag === "Help" && <TextOverlay title="Help" text={helpText()} />}
       {modal?._tag === "Output" && <TextOverlay title={modal.title} text={modal.text} />}
       {modal?._tag === "Sub" && (
-        <SubDialog game={game} form={subForm} field={subField} onChange={setSubForm} error={subError} />
+        <SubDialog game={game} roster={state.rosters[subForm.side]} form={subForm} field={subField} onChange={setSubForm} error={subError} />
       )}
     </box>
   )
